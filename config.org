@@ -15,6 +15,19 @@ years of Emacs use and configuration.
 Many of the code blocks in this file were lifted directly from [[https://github.com/andreyorst/dotfiles/tree/master/.emacs.d][this
 excellent configuration from Andre Yorst.]]
 
+** Using This Configuration
+If you want to use this configuration as a baseline for your own Emacs
+setup, follow the steps below:
+
+- First, fork and clone this repo onto your system.
+~$ git clone https://github.com/bearguns/bear-emacs.git~
+- Second, create the directory ~.emacs.d/~ in your home directory.
+~$ mkdir ~/.emacs.d~
+- Third, open ~config.org~ inside of the cloned repo.
+~$ emacs ~/bear-emacs/config.org~
+- Finally, run  the command ~org-babel-tangle~ inside  of ~config.el~. The
+  quickest way is to press the key combination ~C-c C-v t~.
+
 * Configuring Emacs with Org Mode
 ** Why Emacs?
 I could spend hours discussing Emacs, what I use it for, and the
