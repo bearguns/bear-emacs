@@ -1,8 +1,8 @@
-#+TITLE: Bear Emacs
+#+TITLE: Bearguns' Emacs Configuration
 #+AUTHOR: Sean Brage
 #+PROPERTY: header-args :tangle "~/.emacs.d/init.el"
 
-* Bear Emacs - Emacs Configuration Provided by Org Mode
+* Configuring Emacs with Org Mode
 Configuring Emacs can be as much of a task as /using/ Emacs to do all
 the things we use Emacs for - writing books, publishing scientific
 papers, programming computers, developing games, creating web pages,
@@ -223,7 +223,7 @@ By default, Emacs will ask you to enter "yes" or "no" instead of "y"
 or "n", but we can fix that.
 
 #+BEGIN_SRC emacs-lisp
-(fset 'yes-or-no-p 'y-or-no-p)
+(defalias 'yes-or-no-p 'y-or-n-p)
 #+END_SRC
 
 I want to avoid putting actual tab characters in my code, and I want
@@ -345,7 +345,8 @@ PITA, and because it's yet /another/ thing to fiddle with, we'll just
 use the system defaults and set a decent size.
 
 #+BEGIN_SRC emacs-lisp
-(set-face-attribute 'default t :height 140)
+(set-face-attribute 'default nil 
+                     :height 140)
 #+END_SRC
 
 *** Color Theme
@@ -625,7 +626,6 @@ different.
             (flyspell-mode)
             (setq default-justification 'full
                   org-startup-with-inline-images t
-                  org-startup-folded 'content
                   org-hide-emphasis-markers t
                   org-adapt-indentation nil
                   org-hide-leading-stars nil

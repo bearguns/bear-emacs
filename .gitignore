@@ -12,9 +12,11 @@ ac-comphist.dat
 init.el~
 bookmarks
 ("recentf~")
+recentf
 recentf~
 .cache/
 .session.*
 session.*
 transient/
 url/
+history
