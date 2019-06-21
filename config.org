@@ -2,7 +2,6 @@
 #+AUTHOR: Sean Brage
 #+PROPERTY: header-args :tangle "~/.emacs.d/init.el"
 
-* Configuring Emacs with Org Mode
 Configuring Emacs can be as much of a task as /using/ Emacs to do all
 the things we use Emacs for - writing books, publishing scientific
 papers, programming computers, developing games, creating web pages,
@@ -16,6 +15,7 @@ years of Emacs use and configuration.
 Many of the code blocks in this file were lifted directly from [[https://github.com/andreyorst/dotfiles/tree/master/.emacs.d][this
 excellent configuration from Andre Yorst.]]
 
+* Configuring Emacs with Org Mode
 ** Why Emacs?
 I could spend hours discussing Emacs, what I use it for, and the
 various twists and turns of fate that led to me abandoning Atom,
