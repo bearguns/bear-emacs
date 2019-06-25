@@ -303,6 +303,18 @@ b~. Let's change that.
 (defalias 'list-buffers 'ibuffer)
 #+END_SRC
 
+On   Mac   systems   (especially    when   working   with   3rd-party,
+non-Apple-layout  keyboards), it  can be  a pain  switching my  muscle
+memory for  the Meta key. On  Linux systems, "Alt" works  as meta, but
+for macOS the  key to the left  of the spacebar is  typically bound as
+Command. This snippet of code will tell  Emacs to use the left Alt key
+as Meta instead of command.
+
+#+BEGIN_SRC emacs-lisp
+(when (eq system-type 'darwin)
+    (setq mac-command-modifier 'meta))
+#+END_SRC
+
 ** The Emacs UI
 There are things about the way Emacs /looks/ by default that I'm not
 crazy about. I also don't really like any of the built-in
@@ -637,10 +649,7 @@ different.
 (add-hook 'org-mode-hook
           (lambda()
             (flyspell-mode)
-            (setq default-justification 'full
-                  org-startup-with-inline-images t
-                  org-hide-emphasis-markers t
-                  org-adapt-indentation nil
+            (setq org-startup-with-inline-images t
                   org-hide-leading-stars nil
                   org-highlight-latex-and-related '(latex)
                   revert-without-query '(".*\.pdf"))
