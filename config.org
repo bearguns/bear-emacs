@@ -401,8 +401,18 @@ needs to be configured first.
 (setq-default use-package-always-ensure t)
 (require 'use-package)
 #+END_SRC
+** Expand Region
+[[https://github.com/magnars/expand-region.el][Expand Region]] is a package for intelligently selecting text in
+regions. For example, if I have a long statement between parentheses,
+subsequent presses of my expand-region command will select the word
+under point, and then everything within the parentheses, and finally
+everything, including the parentheses.
 
-** Major Modes
+#+BEGIN_SRC emacs-lisp
+(use-package expand-region
+    :config (global-set-key (kbd "C-;") 'er/expand-region))
+#+END_SRC
+** Emacs Modes
 Emacs provides and uses various modes when you're working in different
 buffers. Each buffer gets has a single major mode (the buffer king!),
 and can have many, many minor modes enabled as well.
