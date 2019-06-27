@@ -375,6 +375,20 @@ repository.
 (add-to-list 'custom-theme-load-path "~/code/naysayer-theme.el")
 (load-theme 'naysayer t)
 #+END_SRC
+*** Modeline
+The  Emacs modeline  is a  helpful status  line at  the bottom  of the
+buffer view. By  default, it displays the name of  the current buffer,
+and  lists active  major and  minor modes.  While I  don't like  going
+overboard  with modeline  customization,  the [[https://gitlab.com/jessieh/mood-line][mood-line]]  package is  a
+nice, minimal  modeline package  that seems to  focus on  only putting
+/helpful/ things in your modeline.
+
+#+BEGIN_SRC emacs-lisp
+(use-package mood-line
+    :config
+    (mood-line-mode))
+#+END_SRC
+
 ** Use Package
 [[https://github.com/jwiegley/use-package][Use Package]] is an excellent way to make installing and configuring
 packages in Emacs easy and declarative. I use it liberally, so it
