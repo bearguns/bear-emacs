@@ -135,44 +135,6 @@ sections for easy reading and skimming.
 There a number of changes we can make early on in our config to make
 sure Emacs starts up /quickly/. Slow startup is a common issue for
 Emacs users, but it's not too difficult to keep our startups snappy.
-
-*** Garbage collection on startup
-As I learned from Andre's config, one of the biggest contributors to
-slow Emacs startup times is the garbage collector - it gets invoked
-quite a few times on startup, which can easily add multiple /seconds/
-to startup. That's no bueno. Instead, we can store the default values
-for the garbage collectors in variables on startup, and then restore
-them once Emacs is done loading.
-
-#+BEGIN_SRC emacs-lisp
-(defvar my--gc-cons-threshold gc-cons-threshold)
-(defvar my--gc-cons-percentage gc-cons-percentage)
-(defvar my--file-name-handler-alist file-name-handler-alist)
-#+END_SRC
-
-Now, we will raise the threshold of the garbage collector and keep it
-from running at launch.
-
-#+BEGIN_SRC emacs-lisp
-(setq gc-cons-threshold 402653184
-      gc-cons-percentage 0.6
-      message-log-max 16384
-      auto-window-vscroll nil
-      package-enable-at-startup nil
-      file-name-handler-alist nil)
-#+END_SRC
-
-Finally, we'll add a [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Hooks.html][hook]] to restore the intitial values so that we
-get garbage collection as we use Emacs normally.
-
-#+BEGIN_SRC emacs-lisp
-(add-hook 'after-init-hook
-          (lambda ()
-            (setq gc-cons-threshold my--gc-cons-threshold
-                  gc-cons-percentage my--gc-cons-percentage
-                  file-name-handler-alist my--file-name-handler-alist)))
-#+END_SRC
-
 *** ~package.el~ initialization
 We can wait to initialize ~package.el~ until we actually need
 it. That's a big win for startup times!
@@ -239,17 +201,6 @@ or "n", but we can fix that.
 (defalias 'yes-or-no-p 'y-or-n-p)
 #+END_SRC
 
-I want to avoid putting actual tab characters in my code, and I want
-to scroll by lines when I reach the bottom of the page (since C-v and
-M-v already handle scrolling by "page"). More information can be found
-in [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Auto-Scrolling.html][the Emacs Wiki page on automatic scrolling.]]
-
-#+BEGIN_SRC emacs-lisp
-(setq-default indent-tabs-mode nil
-              scroll-step 1
-              scroll-conservatively 10000
-              auto-window-vscroll nil)
-#+END_SRC
 
 Emacs will by default add "custom" items to your ~init.el~, but I
 don't really care for that.
@@ -358,35 +309,22 @@ PITA, and because it's yet /another/ thing to fiddle with, we'll just
 use the system defaults and set a decent size.
 
 #+BEGIN_SRC emacs-lisp
-(set-face-attribute 'default nil 
-                     :height 140)
+(when (member "DejaVuSansMono Nerd Font" (font-family-list))
+	      (set-face-attribute 'default nil :font "DejaVuSansMono Nerd Font" :height 140))
 #+END_SRC
 
 *** Color Theme
-Jonathan Blow's excellent Twitch channel has been a major inspiration
-for my Emacs configuration and usage. While he hasn't made his
-personal Emacs theme officially available, another viewer did the
-heavy lifting of making a near-perfect version of it. The
-naysayer-theme package isn't published on Melpa yet, however, so I
-need to do some customization to load it in from the cloned git
-repository.
+Color themes are a funny thing. For some users, it seems to be a part
+of their identity, and they'd sooner die than use anything but Very
+Popular Theme. As time goes on, making sure I have the same theme
+installed in every app/system is just too big a PITA. Emacs ships with
+a number of built-in themes, some light, some dark; some easy to look
+at, some hideous. Rather than bloat my config with /another/ package,
+I'm going to /try/ and fight the fiddle-temptation and just use the
+built-in theme that I like best, which in this case is "deeper-blue".
 
 #+BEGIN_SRC emacs-lisp
-(add-to-list 'custom-theme-load-path "~/code/naysayer-theme.el")
-(load-theme 'naysayer t)
-#+END_SRC
-*** Modeline
-The  Emacs modeline  is a  helpful status  line at  the bottom  of the
-buffer view. By  default, it displays the name of  the current buffer,
-and  lists active  major and  minor modes.  While I  don't like  going
-overboard  with modeline  customization,  the [[https://gitlab.com/jessieh/mood-line][mood-line]]  package is  a
-nice, minimal  modeline package  that seems to  focus on  only putting
-/helpful/ things in your modeline.
-
-#+BEGIN_SRC emacs-lisp
-(use-package mood-line
-    :config
-    (mood-line-mode))
+(load-theme 'deeper-blue)
 #+END_SRC
 
 ** Use Package
@@ -410,6 +348,7 @@ everything, including the parentheses.
 
 #+BEGIN_SRC emacs-lisp
 (use-package expand-region
+    :ensure t
     :config (global-set-key (kbd "C-;") 'er/expand-region))
 #+END_SRC
 ** Emacs Modes
