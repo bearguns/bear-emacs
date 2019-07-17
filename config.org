@@ -339,6 +339,17 @@ needs to be configured first.
 (setq-default use-package-always-ensure t)
 (require 'use-package)
 #+END_SRC
+** Neotree
+[[https://github.com/jaypei/emacs-neotree][Neotree]] is an Emacs package for viewing files and directories in a
+tree view, similar to how you would in applications like VS Code or
+Atom. Especially for my work, it's helpful to be able to quickly see
+context and directory structure of large repos.
+
+#+BEGIN_SRC emacs-lisp
+(use-package neotree
+  :ensure t
+  :config (global-set-key [f8] 'neotree-toggle))
+#+END_SRC
 ** Expand Region
 [[https://github.com/magnars/expand-region.el][Expand Region]] is a package for intelligently selecting text in
 regions. For example, if I have a long statement between parentheses,
