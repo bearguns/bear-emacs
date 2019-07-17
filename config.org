@@ -303,6 +303,14 @@ with spaces.
       cursor-in-non-selected-windows nil)
 #+END_SRC
 
+It's helpful to see the current line and column number, especially for
+tracking down errors reported by the console, etc. These built-in
+modes are perfect for just that, and will put a non-intrusive display
+in the modeline.
+#+BEGIN_SRC emacs-lisp
+(line-number-mode)
+(column-number-mode)
+#+END_SRC
 *** Font Settings
 Because installing custom fonts across different systems can be a
 PITA, and because it's yet /another/ thing to fiddle with, we'll just
@@ -316,15 +324,16 @@ use the system defaults and set a decent size.
 *** Color Theme
 Color themes are a funny thing. For some users, it seems to be a part
 of their identity, and they'd sooner die than use anything but Very
-Popular Theme. As time goes on, making sure I have the same theme
-installed in every app/system is just too big a PITA. Emacs ships with
-a number of built-in themes, some light, some dark; some easy to look
-at, some hideous. Rather than bloat my config with /another/ package,
-I'm going to /try/ and fight the fiddle-temptation and just use the
-built-in theme that I like best, which in this case is "deeper-blue".
+Popular Theme. For me, I want something that is easy to look at for
+long periods of time, and minimally colors the source code in which
+I'm working. [[https://github.com/nickav/naysayer-theme.el][The naysayer-theme]] checks most of my boxes, and is
+inspired by the personal theme used by a programming hero of mine,
+Jonathan Blow.
 
 #+BEGIN_SRC emacs-lisp
-(load-theme 'deeper-blue)
+(use-package naysayer-theme
+  :ensure t
+  :config (load-theme 'naysayer t))
 #+END_SRC
 
 ** Use Package
@@ -573,6 +582,20 @@ rely on things like ~ripgrep~ will "just work".
   (exec-path-from-shell-initialize))
 #+END_SRC
 
+*** Eglot
+[[https://github.com/joaotavora/eglot][Eglot]] is an excellent package for interacting with the (also
+excellent) [[https://langserver.org/][Language Server Protocol]], which powers IDE-like features in
+a growing number of editors. This block will make sure Eglot is
+installed, and configure it to work with the appropriate server for
+the different languages in which I regularly program.
+
+#+BEGIN_SRC emacs-lisp
+(use-package eglot
+  :ensure t
+  :config
+  ;; Python Language Server
+  (add-to-list 'eglot-server-programs '(python-mode . ("pyls"))))
+#+END_SRC
 ** Org Mode
 Org mode is a big enough part of my daily life to warrant its own
 heading here. I use Org for task management with GTD. I use it to
@@ -635,7 +658,7 @@ configuration.
 #+BEGIN_SRC emacs-lisp
 (defun my/org-tangle-on-config-save ()
   "Tangle source code blocks when configuration file is saved."
-  (when (string= buffer-file-name (file-truename "~/.emacs.d/config.org"))
+  (when (string= buffer-file-name (file-truename "~/bear-configs/config.org"))
     (org-babel-tangle)
     (byte-compile-file "~/.emacs.d/init.el")))
 #+END_SRC
