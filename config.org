@@ -140,8 +140,8 @@ We can wait to initialize ~package.el~ until we actually need
 it. That's a big win for startup times!
 
 #+BEGIN_SRC emacs-lisp
-(setq package-enable-at-startup nil
-      package--init-file-ensured t)
+(setq package-enable-at-startup nil)
+(require 'package)
 #+END_SRC
 
 Melpa is, from what I can gather, the most popular package repository
@@ -149,27 +149,43 @@ for Emacs packages. Almost every package I use in my Emacs
 configuration is available on Melpa, so this block tells the Emacs
 package manager to point to Melpa for installing packages.
 
+I also want to make sure that I'm installing from the stable branch of
+MELPA, and that Emacs will prioritize MELPA over the other options I
+list below.
 #+BEGIN_SRC emacs-lisp
-(require 'package)
-(setq package-enable-at-startup nil)
-(add-to-list 'package-archives
-             '("melpa" . "https://melpa.org/packages/") t)
+(add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/") t)
+(add-to-list 'package-archives '("marmalade" . "https://marmalade-repo.org/packages/") t)
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+(package-initialize)
 #+END_SRC
 
 *Note for Windows users*: change the above ~https~ to ~http~ (Thanks
  for the tip, Andre!).
 
-Next, we will update the package list if it doesn't exist (this
-ensures packages are found in the Melpa repository).
-
-#+BEGIN_SRC emacs-lisp
-(package-initialize)
-(when (not package-archive-contents)
-    (package-refresh-contents))
-#+END_SRC
-
 Now we're setup and ready to install packages later on.
 
+** Use Package
+[[https://github.com/jwiegley/use-package][Use Package]] is an excellent way to make installing and configuring
+packages in Emacs easy and declarative. I use it liberally, so it
+needs to be configured first.
+
+#+BEGIN_SRC emacs-lisp
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
+(require 'use-package)
+(require 'use-package-ensure)
+(setq use-package-always-ensure t)
+#+END_SRC
+** Auto Update Packages
+#+BEGIN_SRC emacs-lisp
+(use-package auto-package-update
+  :config
+  (setq auto-package-update-delete-old-versions t)
+  (setq auto-package-update-hide-results t)
+  (setq auto-package-update-interval 14)
+  (auto-package-update-maybe))
+#+END_SRC
 ** Better Defaults
 While there are packages like [[https://github.com/technomancy/better-defaults][better-defaults]] that can "magically"
 make your Emacs more better, I prefer to have explicit magic in my
@@ -317,8 +333,11 @@ PITA, and because it's yet /another/ thing to fiddle with, we'll just
 use the system defaults and set a decent size.
 
 #+BEGIN_SRC emacs-lisp
-(when (member "DejaVuSansMono Nerd Font" (font-family-list))
-	      (set-face-attribute 'default nil :font "DejaVuSansMono Nerd Font" :height 140))
+(when (member "Hack" (font-family-list))
+	      (set-face-attribute 'default nil :font "Hack" :height 140))
+
+(when (string-equal system-type "darwin")
+      (set-face-attribute 'default nil :font "Hack" :height 150))
 #+END_SRC
 
 *** Color Theme
@@ -336,18 +355,6 @@ Jonathan Blow.
   :config (load-theme 'naysayer t))
 #+END_SRC
 
-** Use Package
-[[https://github.com/jwiegley/use-package][Use Package]] is an excellent way to make installing and configuring
-packages in Emacs easy and declarative. I use it liberally, so it
-needs to be configured first.
-
-#+BEGIN_SRC emacs-lisp
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
-(setq-default use-package-always-ensure t)
-(require 'use-package)
-#+END_SRC
 ** Neotree
 [[https://github.com/jaypei/emacs-neotree][Neotree]] is an Emacs package for viewing files and directories in a
 tree view, similar to how you would in applications like VS Code or
@@ -593,19 +600,20 @@ rely on things like ~ripgrep~ will "just work".
   (exec-path-from-shell-initialize))
 #+END_SRC
 
-*** Eglot
-[[https://github.com/joaotavora/eglot][Eglot]] is an excellent package for interacting with the (also
-excellent) [[https://langserver.org/][Language Server Protocol]], which powers IDE-like features in
-a growing number of editors. This block will make sure Eglot is
-installed, and configure it to work with the appropriate server for
-the different languages in which I regularly program.
+*** Language Server Protocol
+The [[https://langserver.org/][Language Server Protocol]], which powers IDE-like features in
+a growing number of editors, is awesome. This block configures the
+recommended [[https://github.com/emacs-lsp/lsp-mode][lsp-mode]] so that I can take advantage of the myriad
+features LSP brings to the table.
+
+I also register various other major modes to work with lsp-mode, even
+though part of me thinks the configuration blocks for the individual
+modes should handle that part.
 
 #+BEGIN_SRC emacs-lisp
-(use-package eglot
-  :ensure t
-  :config
-  ;; Python Language Server
-  (add-to-list 'eglot-server-programs '(python-mode . ("pyls"))))
+(use-package lsp-mode
+  :hook (python-mode . lsp)
+  :hook (vue-mode . lsp))
 #+END_SRC
 ** Org Mode
 Org mode is a big enough part of my daily life to warrant its own
