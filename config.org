@@ -152,6 +152,15 @@ package manager to point to Melpa for installing packages.
 I also want to make sure that I'm installing from the stable branch of
 MELPA, and that Emacs will prioritize MELPA over the other options I
 list below.
+
+*** Emacs 26.2 ELPA Bug
+There seems to be a bug in v26.2 that makes elpa requests fail. If
+this block below resolves the issue, then I know I have the bug and I
+need to wait for 26.3 for resolution.
+#+BEGIN_SRC emacs-lisp
+(setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
+#+END_SRC
+
 #+BEGIN_SRC emacs-lisp
 (add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/") t)
 (add-to-list 'package-archives '("marmalade" . "https://marmalade-repo.org/packages/") t)
@@ -456,8 +465,8 @@ job without it!
 
 #+BEGIN_SRC emacs-lisp
 (use-package magit
-  :ensure t
-  :defer t
+  :config
+  (setq magit-refresh-status-buffer nil)
   :init
   (global-set-key (kbd "C-x g") 'magit-status))
 #+END_SRC
