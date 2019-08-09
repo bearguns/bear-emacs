@@ -386,13 +386,14 @@ invocations of the same command, and is a frustrating time-waster.
 
 [[https://github.com/abo-abo/ace-window][Ace Window]] remedies this by providing a simple interface for jumping
 directly to the window you /want/. Here I'll install the package and
-bind the =ace-window= command to =M-o=, since that's bound by default
-to set font faces, something I don't do nearly as often (if ever)
-compared to moving between windows.
+bind the =ace-window= command to =C-x o=, which is the default command
+to move between windows. Since ace-window will by default call the
+built-in =other-window= command when there are only two windows, I'm
+totally fine with overriding the default key binding for this command.
 #+BEGIN_SRC emacs-lisp
 (use-package ace-window
     :config
-    (global-set-key (kbd "M-o") 'ace-window))
+    (global-set-key (kbd "C-x o") 'ace-window))
 #+END_SRC
 * YA Snippet
 Snippets are a way to provide instant text-expansion to Emacs. For
