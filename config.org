@@ -15,21 +15,7 @@ years of Emacs use and configuration.
 Many of the code blocks in this file were lifted directly from [[https://github.com/andreyorst/dotfiles/tree/master/.emacs.d][this
 excellent configuration from Andre Yorst.]]
 
-** Using This Configuration
-If you want to use this configuration as a baseline for your own Emacs
-setup, follow the steps below:
-
-- First, fork and clone this repo onto your system.
-~$ git clone https://github.com/bearguns/bear-emacs.git~
-- Second, create the directory ~.emacs.d/~ in your home directory.
-~$ mkdir ~/.emacs.d~
-- Third, open ~config.org~ inside of the cloned repo.
-~$ emacs ~/bear-emacs/config.org~
-- Finally, run  the command ~org-babel-tangle~ inside  of ~config.el~. The
-  quickest way is to press the key combination ~C-c C-v t~.
-
-* Configuring Emacs with Org Mode
-** Why Emacs?
+* Why Emacs?
 I could spend hours discussing Emacs, what I use it for, and the
 various twists and turns of fate that led to me abandoning Atom,
 Spacemacs, Vim, and Visual Studio Code (in that order) before
@@ -77,7 +63,20 @@ text:
   simply bundles of Emacs Lisp code. This consistency and
   "dog-fooding" is to me, a big win.
 
-** Why Configure Emacs with Org Mode?
+* Using This Configuration
+If you want to use this configuration as a baseline for your own Emacs
+setup, follow the steps below:
+
+- First, fork and clone this repo onto your system.
+~$ git clone https://github.com/bearguns/bear-emacs.git~
+- Second, create the directory ~.emacs.d/~ in your home directory.
+~$ mkdir ~/.emacs.d~
+- Third, open ~config.org~ inside of the cloned repo.
+~$ emacs ~/bear-emacs/config.org~
+- Finally, run  the command ~org-babel-tangle~ inside  of ~config.el~. The
+  quickest way is to press the key combination ~C-c C-v t~.
+
+* Configuring Emacs with Org Mode
 [[https://orgmode.org][Org mode]] is an incredible package for managing just about everything
 life throws at you in easy, simple, plain text. But of course,
 nothing's ever as simple as it seems with Emacs, and so it is with Org
@@ -108,7 +107,7 @@ startup to configure itself. This means that the source code blocks
 you see in this file aren't merely /examples/ - they're the real deal,
 and they'll really configure my Emacs installation for me.
 
-* Configuration
+* Configuration Init
 Because of a custom function (defined further on in this document),
 every time I save this file, the source code contained here will be
 compiled into my ~init.el~ file. Feel free to jump to the parts of
@@ -131,11 +130,11 @@ recommended conventions of Emacs Lisp:
 From here on, I'll be breaking out the configuration into different
 sections for easy reading and skimming.
 
-** Startup
+* Startup
 There a number of changes we can make early on in our config to make
 sure Emacs starts up /quickly/. Slow startup is a common issue for
 Emacs users, but it's not too difficult to keep our startups snappy.
-*** ~package.el~ initialization
+** ~package.el~ initialization
 We can wait to initialize ~package.el~ until we actually need
 it. That's a big win for startup times!
 
@@ -153,7 +152,7 @@ I also want to make sure that I'm installing from the stable branch of
 MELPA, and that Emacs will prioritize MELPA over the other options I
 list below.
 
-*** Emacs 26.2 ELPA Bug
+** Emacs 26.2 ELPA Bug
 There seems to be a bug in v26.2 that makes elpa requests fail. If
 this block below resolves the issue, then I know I have the bug and I
 need to wait for 26.3 for resolution.
@@ -173,7 +172,7 @@ need to wait for 26.3 for resolution.
 
 Now we're setup and ready to install packages later on.
 
-** Use Package
+* Use Package
 [[https://github.com/jwiegley/use-package][Use Package]] is an excellent way to make installing and configuring
 packages in Emacs easy and declarative. I use it liberally, so it
 needs to be configured first.
@@ -186,7 +185,9 @@ needs to be configured first.
 (require 'use-package-ensure)
 (setq use-package-always-ensure t)
 #+END_SRC
-** Auto Update Packages
+* Auto Update Packages
+This block will check for package updates every 14 days, and remove
+old versions to avoid bloating my =.elpa= directory.
 #+BEGIN_SRC emacs-lisp
 (use-package auto-package-update
   :config
@@ -195,7 +196,7 @@ needs to be configured first.
   (setq auto-package-update-interval 14)
   (auto-package-update-maybe))
 #+END_SRC
-** Better Defaults
+* Emacs Defaults
 While there are packages like [[https://github.com/technomancy/better-defaults][better-defaults]] that can "magically"
 make your Emacs more better, I prefer to have explicit magic in my
 code, rather than behind-the-scenes magic. This isn't a slight on the
@@ -226,7 +227,6 @@ or "n", but we can fix that.
 (defalias 'yes-or-no-p 'y-or-n-p)
 #+END_SRC
 
-
 Emacs will by default add "custom" items to your ~init.el~, but I
 don't really care for that.
 
@@ -252,48 +252,49 @@ sessions by default.
 (savehist-mode 1)
 #+END_SRC
 
-For whatever reason, I feel extremely sensitive to visual noise. Too
-much visual input and I have trouble focusing on what I'm doing. To
-help me with this, I disable things like excessive syntax highlighting
-(more on that later), and line numbers.
-
+It's helpful to see the current line and column number, especially for
+tracking down errors reported by the console, etc. These built-in
+modes are perfect for just that, and will put a non-intrusive display
+in the modeline.
 #+BEGIN_SRC emacs-lisp
-(setq line-number-mode nil)
+(line-number-mode)
+(column-number-mode)
 #+END_SRC
 
 Emacs version 26 and above provides built-in (and quite excellent)
 modes for automatically pairing delimiters and auto-indenting
 code. This reduces the number of external packages we need to do work!
-
 #+BEGIN_SRC emacs-lisp
 (electric-pair-mode 1)
 (electric-indent-mode 1)
 (show-paren-mode 1)
 #+END_SRC
 
+Tab characters are the devil.
+#+BEGIN_SRC emacs-lisp
+(setq-default indent-tabs-mode nil)
+#+END_SRC
+
 Emacs also has a great feature for quickly grepping through your open
 buffers, but it's not the default behavior you get when pressing ~C-x
-b~. Let's change that.
-
+C-b~. Let's change that.
 #+BEGIN_SRC emacs-lisp
 (defalias 'list-buffers 'ibuffer)
 #+END_SRC
 
-** The Emacs UI
+* The Emacs UI
 There are things about the way Emacs /looks/ by default that I'm not
 crazy about. I also don't really like any of the built-in
 themes. They're all a little hard for me to read, but YMMV and you may
 find a built-in theme that you enjoy, in which case more power to you!
 I'm all about having fewer things to fiddle with.
-
-*** Default UI
+** UI Defaults
 Emacs launches with a splash screen by default. I never use anything
 on this screen, so we will supress it. This means Emacs will open in
 the ~*scratch*~ buffer by default, which is great! ~*scratch*~ is
 awesome for writing the day's todo list, or some notes about what
 you're working on. But it would be even /better/ if we started in an
 Org mode buffer! We'll take care of all this here:
-
 #+BEGIN_SRC emacs-lisp
 (setq inhibit-splash-screen t
       initial-major-mode 'org-mode
@@ -305,7 +306,6 @@ these add to the visual noise, and I want my Emacs to /look/ as clean
 as possible so I can focus more. Newer users may want to keep the menu
 bar and toolbar around, since they contain a set of icons and menus
 you might be more familiar with.
-
 #+BEGIN_SRC emacs-lisp
 (tooltip-mode -1)
 (menu-bar-mode -1)
@@ -320,48 +320,36 @@ I like to configure the cursor (the visual display of "point") a
 little bit so it's easier to find. I'll also have the cursor expand
 when over a tab character so I can easily see them and replace them
 with spaces.
-
 #+BEGIN_SRC emacs-lisp
-;;; setting blink-cursor-mode to 0 will cause it to blink forever
-(blink-cursor-mode 0)
+;; highlight the line containing point
+(global-hl-line-mode)
+;; super-highlight tab characters so they can be murdered
 (setq-default x-stretch-cursor t
       cursor-in-non-selected-windows nil)
 #+END_SRC
 
-It's helpful to see the current line and column number, especially for
-tracking down errors reported by the console, etc. These built-in
-modes are perfect for just that, and will put a non-intrusive display
-in the modeline.
+** Fonts
 #+BEGIN_SRC emacs-lisp
-(line-number-mode)
-(column-number-mode)
-#+END_SRC
-*** Font Settings
-Because installing custom fonts across different systems can be a
-PITA, and because it's yet /another/ thing to fiddle with, we'll just
-use the system defaults and set a decent size.
+;; on most systems with a ~1080p display, 140 height is big and readable.
+(when (member "Iosevka Nerd Font" (font-family-list))
+	      (set-face-attribute 'default nil :font "Iosevka Nerd Font" :height 140))
 
-#+BEGIN_SRC emacs-lisp
-(when (member "Hack" (font-family-list))
-	      (set-face-attribute 'default nil :font "Hack" :height 140))
-
+;; on Mac systems with hiDPI displays, I bump the font size up.
 (when (string-equal system-type "darwin")
-      (set-face-attribute 'default nil :font "Hack" :height 150))
+      (set-face-attribute 'default nil :font "Iosevka Nerd Font" :height 160))
 #+END_SRC
 
-*** Color Theme
+** Color Themes
 Color themes are a funny thing. For some users, it seems to be a part
 of their identity, and they'd sooner die than use anything but Very
 Popular Theme. For me, I want something that is easy to look at for
 long periods of time, and minimally colors the source code in which
-I'm working. [[https://github.com/nickav/naysayer-theme.el][The naysayer-theme]] checks most of my boxes, and is
-inspired by the personal theme used by a programming hero of mine,
-Jonathan Blow.
-
+I'm working. The doom-themes package contains a number of themes that
+fit this criteria, and let me change things up every now and again easily.
 #+BEGIN_SRC emacs-lisp
-(use-package naysayer-theme
+(use-package doom-themes
   :ensure t
-  :config (load-theme 'naysayer t))
+  :config (load-theme 'doom-city-lights t))
 #+END_SRC
 
 ** Neotree
@@ -369,30 +357,13 @@ Jonathan Blow.
 tree view, similar to how you would in applications like VS Code or
 Atom. Especially for my work, it's helpful to be able to quickly see
 context and directory structure of large repos.
-
 #+BEGIN_SRC emacs-lisp
 (use-package neotree
   :ensure t
   :config (global-set-key [f8] 'neotree-toggle))
 #+END_SRC
-** Expand Region
-[[https://github.com/magnars/expand-region.el][Expand Region]] is a package for intelligently selecting text in
-regions. For example, if I have a long statement between parentheses,
-subsequent presses of my expand-region command will select the word
-under point, and then everything within the parentheses, and finally
-everything, including the parentheses.
 
-#+BEGIN_SRC emacs-lisp
-(use-package expand-region
-    :ensure t
-    :config (global-set-key (kbd "C-;") 'er/expand-region))
-#+END_SRC
-** Emacs Modes
-Emacs provides and uses various modes when you're working in different
-buffers. Each buffer gets has a single major mode (the buffer king!),
-and can have many, many minor modes enabled as well.
-
-*** Nyan Mode
+** Nyan Mode
 Despite all my talk about visual noise and focus, I just can't resist
 putting Nyan Cat in my modeline.
 
@@ -406,12 +377,31 @@ putting Nyan Cat in my modeline.
   (nyan-mode))
 #+END_SRC
 
-*** YA Snippet
+** Ace Window
+Splitting the Emacs frame into multiple windows is easy, fast, and a
+great productivity booster. The built-in command =M-x o= is great for
+quickly moving between two windows, but once you have more than that,
+it's a pain. Getting around more than two windows requires multiple
+invocations of the same command, and is a frustrating time-waster.
+
+[[https://github.com/abo-abo/ace-window][Ace Window]] remedies this by providing a simple interface for jumping
+directly to the window you /want/. Here I'll install the package and
+bind the =ace-window= command to =M-o=, since that's bound by default
+to set font faces, something I don't do nearly as often (if ever)
+compared to moving between windows.
+#+BEGIN_SRC emacs-lisp
+(use-package ace-window
+    :config
+    (global-set-key (kbd "M-o") 'ace-window))
+#+END_SRC
+* YA Snippet
 Snippets are a way to provide instant text-expansion to Emacs. For
 example, when writing the source code blocks in this config document,
 I can simply type ~scbel~ and then press ~TAB~ to get an empty Org
 mode source code block, properly formatted, with the cursor set at the
-proper location to start writing code.
+proper location to start writing code. This also has applications
+outside of programming, so I'm keeping YASnippet configuration in its
+own heading.
 
 Snippets are located in ~~/.emacs.d/snippets/~. I recommend making
 your own ~snippets~ directory and symlinking it into ~~/.emacs.d/~.
@@ -423,20 +413,24 @@ your own ~snippets~ directory and symlinking it into ~~/.emacs.d/~.
   :init (yas-global-mode 1))
 #+END_SRC
 
-*** Company Mode
+* Programming
+** Company Mode
 Company seems to be the far-and-away favorite for auto-completion in
 Emacs buffers. I'm loading the package and configuring it a bit here,
 but for major modes that use Company, I'll leave extra Company
 configuration to those modes.
-
 #+BEGIN_SRC emacs-lisp
 (use-package company
   :config
-  (setq company-idle-delay 0.2)
-  (setq company-minimum-prefix-length 3))
+  ;; get those suggestions up quickly
+  (setq company-idle-delay 0.1)
+  (setq company-minimum-prefix-length 3)
+  :init
+  ;; use company in all programming modes
+  (add-hook 'prog-mode-hook 'company-mode))
 #+END_SRC
 
-*** Counsel
+** Counsel
 Counsel is a suite of packages that provide completion to various
 Emacs functions. This gives me a nice menu of options when searching
 for files, commands, etc.
@@ -458,11 +452,10 @@ for files, commands, etc.
   (global-set-key (kbd "C-x C-f") 'counsel-find-file))
 #+END_SRC
 
-*** Magit
+** Magit
 Magit is the greatest software package ever created. It makes working
 in Git repositories painless, fast, and easy. I don't want to do my
 job without it!
-
 #+BEGIN_SRC emacs-lisp
 (use-package magit
   :config
@@ -471,7 +464,7 @@ job without it!
   (global-set-key (kbd "C-x g") 'magit-status))
 #+END_SRC
 
-*** Editorconfig
+** Editorconfig
 Editorconfig is a great way to make sure that everyone working on a
 project has the same basic text editor settings for things like
 indentation, new lines at end-of-file, and other nitpicky things. This
@@ -485,57 +478,57 @@ behavior on my laptop and desktop.
   (editorconfig-mode 1))
 #+END_SRC
 
-*** Add Node Modules to Path
+** Add Node Modules to Path
 This gem of a package allows Emacs to use things like ESLint without
 requiring you to install it globally. If you're working in a project
 with a ~node_modules/~ directory, Emacs will then use the
 project-specific version of those binaries.
-
 #+BEGIN_SRC emacs-lisp
 (use-package add-node-modules-path
   :config
-  (add-hook 'vue-mode-hook #'add-node-modules-path)
-  (add-hook 'web-mode-hook #'add-node-modules-path)
-  (add-hook 'js-mode-hook #'add-node-modules-path))
+  (add-hook 'vue-mode-hook 'add-node-modules-path)
+  (add-hook 'web-mode-hook 'add-node-modules-path)
+  (add-hook 'js2-mode-hook 'add-node-modules-path))
 #+END_SRC
 
-*** Flycheck
+** Flycheck
 This provides excellent error-checking in different major modes (for
 example, listing and jumping to ESLint errors when working in a
 JavaScript project). Like Company, I'll configure different
 flycheck-checkers in the respective major mode configuration
-
 #+BEGIN_SRC emacs-lisp
 (use-package flycheck
   :ensure t
   :config
+  (setq flycheck-check-syntax-automatically '(mode-enabled idle-change))
+  (setq flycheck-idle-change-delay 2)
+  (setq flycheck-python-flake8-executable "python3")
   (setq-default flycheck-disabled-checkers
-		(append flycheck-disabled-checkers
-			'(javascript-jshint)))
-  (global-flycheck-mode)
+  (append flycheck-disabled-checkers
+    '(javascript-jshint)))
   (add-to-list 'display-buffer-alist
-	       `(,(rx bos "*Flycheck errors*" eos)
-		 (display-buffer-reuse-window
-		  display-buffer-in-side-window)
-		 (side          . bottom)
-		 (window-height . 0.25))))
+    `(,(rx bos "*Flycheck errors*" eos)
+    (display-buffer-reuse-window)
+    (display-buffer-in-side-window)
+    (side          . bottom)
+    (window-height . 0.25))))
+  :init
+  (add-hook 'prog-mode-hook 'flycheck-mode)
 #+END_SRC
 
-*** Emmet
+** Emmet
 As a web developer, Emmet is invaluable for quickly expanding HTML
 elements inline. It takes ~input[name="my-input" v-model="username"
 class="form__input"]~ and expands to proper HTML markup.
-
 #+BEGIN_SRC emacs-lisp
 (use-package emmet-mode)
 #+END_SRC
 
-*** Web Mode
+** Web Mode
 I use web mode when editing HTML files, including Jinja templates (for
 Flask apps), Django templates, and the like. I do a little bit of
-customization to keep the syntax highlighting to a minimum in the
-~naysayer~ theme, and to use Emacs' built-in ~electric-pairs-mode~.
-
+customization to keep the syntax highlighting to a minimum,
+ and to use Emacs' built-in ~electric-pairs-mode~.
 #+BEGIN_SRC emacs-lisp
 (use-package web-mode
   :ensure t
@@ -546,8 +539,9 @@ customization to keep the syntax highlighting to a minimum in the
   (setq web-mode-enable-auto-closing t)
   (setq-default web-mode-builtin-face nil)
   (setq-default web-mode-keyword-face nil)
-  (setq-default web-mode-function-name-face nil)
-
+  (setq web-mode-ac-sources-alist
+      '(("css" . (ac-source-css-property))
+        ("html" . (ac-source-words-in-buffer ac-source-abbrev))))
   :init
   (add-hook 'web-mode-hook 'emmet-mode)
   (add-hook 'web-mode-hook 'electric-pair-mode)
@@ -558,7 +552,7 @@ customization to keep the syntax highlighting to a minimum in the
   (add-hook 'web-mode-hook 'web-mode-add-electric-pairs))
 #+END_SRC
 
-*** Prettier
+** Prettier
 For better or worse, a large population of the JavaScript community
 has embraced Prettier to...well, supposedly make code "pretty". I
 personally hate most of the decisions prettier makes, but we use it at
@@ -571,12 +565,11 @@ my company so I'm just embracing it with gritted teeth.
   (add-hook 'js-mode-hook 'prettier-js-mode))
 #+END_SRC
 
-*** Vue Mode
+** Vue Mode
 Vue is my personal front end framework of choice, and it's also what
 we use at my current company. While it's not without quirks, vue mode
 is still the /only/ true major mode for working in Vue, and generally
 speaking it does what I want.
-
 #+BEGIN_SRC emacs-lisp
 (use-package vue-mode
   :defer t
@@ -589,16 +582,15 @@ speaking it does what I want.
   (add-hook 'vue-mode-hook 'electric-pair-mode))
 #+END_SRC
 
-*** JavaScript Mode
-While packages like ~js2-mode~ are great, I just didn't end up seeing
-enough value in them to weigh down my config, so I'm just using Emacs'
-built-in JS support. It suits my needs but again YMMV.
-
+** JavaScript Mode
 #+BEGIN_SRC emacs-lisp
-(flycheck-add-mode 'javascript-eslint 'js-mode)
+(use-package js2-mode
+  :init
+  (flycheck-add-mode 'javascript-eslint 'js2-mode)
+  (add-to-list 'auto-mode-alist '("\\.js\\'\\|\\.json\\'" . js2-mode)))
 #+END_SRC
 
-*** Exec Path from Shell
+** Exec Path from Shell
 This package causes Emacs to read my system's $PATH, so packages that
 rely on things like ~ripgrep~ will "just work".
 
@@ -609,20 +601,17 @@ rely on things like ~ripgrep~ will "just work".
   (exec-path-from-shell-initialize))
 #+END_SRC
 
-*** Language Server Protocol
-The [[https://langserver.org/][Language Server Protocol]], which powers IDE-like features in
-a growing number of editors, is awesome. This block configures the
-recommended [[https://github.com/emacs-lsp/lsp-mode][lsp-mode]] so that I can take advantage of the myriad
-features LSP brings to the table.
-
-I also register various other major modes to work with lsp-mode, even
-though part of me thinks the configuration blocks for the individual
-modes should handle that part.
+** Expand Region
+[[https://github.com/magnars/expand-region.el][Expand Region]] is a package for intelligently selecting text in
+regions. For example, if I have a long statement between parentheses,
+subsequent presses of my expand-region command will select the word
+under point, and then everything within the parentheses, and finally
+everything, including the parentheses.
 
 #+BEGIN_SRC emacs-lisp
-(use-package lsp-mode
-  :hook (python-mode . lsp)
-  :hook (vue-mode . lsp))
+(use-package expand-region
+    :ensure t
+    :config (global-set-key (kbd "C-;") 'er/expand-region))
 #+END_SRC
 ** Org Mode
 Org mode is a big enough part of my daily life to warrant its own
@@ -646,27 +635,23 @@ Org documents.
 Because I don't install Org with ~use-package~ (it's already installed
 in modern versions of Emacs), configuring Org mode looks a little
 different.
-
 #+BEGIN_SRC emacs-lisp
 (add-hook 'org-mode-hook
           (lambda()
             (flyspell-mode)
             (setq org-startup-with-inline-images t
                   org-hide-leading-stars nil
-                  org-highlight-latex-and-related '(latex)
                   revert-without-query '(".*\.pdf"))
             (auto-fill-mode)))
 #+END_SRC
 
 I want fontified source code blocks.
-
 #+BEGIN_SRC emacs-lisp
 (setq org-src-fontify-natively t)
 #+END_SRC
 
 I want to use Flycheck when writing inline source code, but I don't
 want certain warnings when writing Emacs Lisp blocks.
-
 #+BEGIN_SRC emacs-lisp
 (add-hook 'emacs-lisp-mode-hook 'flycheck-mode)
 (defvar flycheck-disabled-checkers)
@@ -676,25 +661,6 @@ want certain warnings when writing Emacs Lisp blocks.
   (setq-local flycheck-disabled-checkers '(emacs-lisp-checkdoc)))
 
 (add-hook 'org-src-mode-hook 'my/disable-flycheck-in-org-src-block)
-#+END_SRC
-
-*** Configuring Emacs
-
-Finally, let's setup this file to execute and actually create my Emacs
-configuration.
-
-#+BEGIN_SRC emacs-lisp
-(defun my/org-tangle-on-config-save ()
-  "Tangle source code blocks when configuration file is saved."
-  (when (string= buffer-file-name (file-truename "~/bear-configs/config.org"))
-    (org-babel-tangle)
-    (byte-compile-file "~/.emacs.d/init.el")))
-#+END_SRC
-
-Then, we'll actually call this function when we save our config file.
-
-#+BEGIN_SRC emacs-lisp
-(add-hook 'after-save-hook 'my/org-tangle-on-config-save)
 #+END_SRC
 
 * Concluding
