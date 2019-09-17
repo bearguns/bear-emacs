@@ -321,8 +321,6 @@ little bit so it's easier to find. I'll also have the cursor expand
 when over a tab character so I can easily see them and replace them
 with spaces.
 #+BEGIN_SRC emacs-lisp
-;; highlight the line containing point
-(global-hl-line-mode)
 ;; super-highlight tab characters so they can be murdered
 (setq-default x-stretch-cursor t
       cursor-in-non-selected-windows nil)
@@ -336,23 +334,14 @@ with spaces.
 
 ;; on Mac systems with hiDPI displays, I bump the font size up.
 (when (string-equal system-type "darwin")
-      (set-face-attribute 'default nil :font "Iosevka Nerd Font" :height 160))
+      (set-face-attribute 'default nil :font "Iosevka Nerd Font" :height 140))
 #+END_SRC
 
 ** Color Themes
-Color themes are a funny thing. For some users, it seems to be a part
-of their identity, and they'd sooner die than use anything but Very
-Popular Theme. For me, I want something that is easy to look at for
-long periods of time, and minimally colors the source code in which
-I'm working. More than that, I don't want to install more packages
-than I need. Emacs ships with a handful of color themes. Some are
-light, some dark. Some are very nice and easy to look at, some make
-you want to burn your eyes out with a hot, rusty fork. But, using a
-built-in theme cuts down on configuration items to manage, and helps
-remind me that the point of this great editor is to you know.../edit
-stuff/.
+I change themes a lot. I'm ok with myself.
 #+BEGIN_SRC emacs-lisp
-(load-theme 'deeper-blue)
+(use-package night-owl-theme
+ :config (load-theme 'night-owl t))
 #+END_SRC
 
 ** Neotree
