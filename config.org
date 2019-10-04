@@ -134,6 +134,13 @@ sections for easy reading and skimming.
 There a number of changes we can make early on in our config to make
 sure Emacs starts up /quickly/. Slow startup is a common issue for
 Emacs users, but it's not too difficult to keep our startups snappy.
+** Custom packages in load-path
+Sometimes, a package or function isn't available on ELPA, MELPA,
+etc. These files can be loaded in by adding them to Emacs'
+=load-path=, which in my case is =~/.emacs.d/lisp=.
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'load-path "~/.emacs.d/lisp/")
+#+END_SRC
 ** ~package.el~ initialization
 We can wait to initialize ~package.el~ until we actually need
 it. That's a big win for startup times!
@@ -329,19 +336,15 @@ with spaces.
 ** Fonts
 #+BEGIN_SRC emacs-lisp
 ;; on most systems with a ~1080p display, 140 height is big and readable.
-(when (member "Iosevka Nerd Font" (font-family-list))
-	      (set-face-attribute 'default nil :font "Iosevka Nerd Font" :height 140))
-
-;; on Mac systems with hiDPI displays, I bump the font size up.
-(when (string-equal system-type "darwin")
-      (set-face-attribute 'default nil :font "Iosevka Nerd Font" :height 140))
+(when (member "Cascadia Code" (font-family-list))
+	      (set-face-attribute 'default nil :font "Cascadia Code" :height 140))
 #+END_SRC
 
 ** Color Themes
 I change themes a lot. I'm ok with myself.
 #+BEGIN_SRC emacs-lisp
-(use-package night-owl-theme
- :config (load-theme 'night-owl t))
+(use-package doom-themes
+ :config (load-theme 'doom-gruvbox t))
 #+END_SRC
 
 ** Neotree
@@ -423,6 +426,20 @@ configuration to those modes.
   (add-hook 'prog-mode-hook 'company-mode))
 #+END_SRC
 
+** Projectile
+Projectile makes navigation between and within code repositories (any
+directory being tracked with VCS) fairly painless, and cuts down on
+some common tasks.
+#+BEGIN_SRC emacs-lisp
+(use-package projectile
+  :ensure t
+  :config
+  (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+  (setq projectile-enable-caching t)
+  (setq projectile-completion-system 'ivy)
+  (setq projectile-switch-project-action #'projectile-dired)
+  (projectile-mode +1))
+#+END_SRC
 ** Counsel
 Counsel is a suite of packages that provide completion to various
 Emacs functions. This gives me a nice menu of options when searching
@@ -606,7 +623,7 @@ everything, including the parentheses.
     :ensure t
     :config (global-set-key (kbd "C-;") 'er/expand-region))
 #+END_SRC
-** Org Mode
+* Org Mode
 Org mode is a big enough part of my daily life to warrant its own
 heading here. I use Org for task management with GTD. I use it to
 write songs and stories. I use it to write tutorials, and I even use
@@ -656,6 +673,15 @@ want certain warnings when writing Emacs Lisp blocks.
 (add-hook 'org-src-mode-hook 'my/disable-flycheck-in-org-src-block)
 #+END_SRC
 
+I work with JIRA/Confluence at work, and I want to be able to author
+Atlassian markup in org-mode. I need to make sure I have [[https://github.com/emacsmirror/org/blob/master/contrib/lisp/ox-confluence.el][ox-confluence]]
+in my load path so it can be =require=d below.
+#+BEGIN_SRC emacs-lisp
+(require 'ox-confluence)
+(setq org-export-backends (quote (
+  md
+)))
+#+END_SRC
 * Concluding
 
 Hopefully you like what you've seen, and you feel more empowered to
