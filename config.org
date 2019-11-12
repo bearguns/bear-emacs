@@ -303,8 +303,7 @@ awesome for writing the day's todo list, or some notes about what
 you're working on. But it would be even /better/ if we started in an
 Org mode buffer! We'll take care of all this here:
 #+BEGIN_SRC emacs-lisp
-(setq inhibit-splash-screen t
-      initial-major-mode 'org-mode
+(setq initial-major-mode 'org-mode
       initial-scratch-message "")
 #+END_SRC
 
@@ -321,6 +320,12 @@ you might be more familiar with.
 (when window-system
     (scroll-bar-mode -1)
     (tool-bar-mode -1))
+#+END_SRC
+
+I want Emacs to start maximized, with 2 windows split vertically.
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'default-frame-alist '(fullscreen . maximized))
+(split-window-horizontally)
 #+END_SRC
 
 I like to configure the cursor (the visual display of "point") a
@@ -343,21 +348,20 @@ with spaces.
 ** Color Themes
 I change themes a lot. I'm ok with myself.
 #+BEGIN_SRC emacs-lisp
-(use-package doom-themes
- :config (load-theme 'doom-gruvbox t))
-#+END_SRC
-
-** Neotree
-[[https://github.com/jaypei/emacs-neotree][Neotree]] is an Emacs package for viewing files and directories in a
-tree view, similar to how you would in applications like VS Code or
-Atom. Especially for my work, it's helpful to be able to quickly see
-context and directory structure of large repos.
-#+BEGIN_SRC emacs-lisp
-(use-package neotree
+(use-package chocolate-theme
   :ensure t
-  :config (global-set-key [f8] 'neotree-toggle))
+  :config
+  (load-theme 'chocolate t))
 #+END_SRC
 
+** Rainbow Delimiters
+[[https://github.com/Fanael/rainbow-delimiters][Rainbow delimiters mode]] is helpful in all kinds of programming
+modes. It colors parentheses, braces, brackets, etc. so that you can
+visually grok where blocks of code end, and where you are scope-wise.
+#+BEGIN_SRC emacs-lisp
+(use-package rainbow-delimiters
+  :config (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
+#+END_SRC
 ** Nyan Mode
 Despite all my talk about visual noise and focus, I just can't resist
 putting Nyan Cat in my modeline.
@@ -496,7 +500,6 @@ project-specific version of those binaries.
 #+BEGIN_SRC emacs-lisp
 (use-package add-node-modules-path
   :config
-  (add-hook 'vue-mode-hook 'add-node-modules-path)
   (add-hook 'web-mode-hook 'add-node-modules-path)
   (add-hook 'js2-mode-hook 'add-node-modules-path))
 #+END_SRC
@@ -544,9 +547,18 @@ customization to keep the syntax highlighting to a minimum,
   :ensure t
   :config
   (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+  ;; enable web-mode for VueJS files
+  (add-to-list 'auto-mode-alist '("\\.vue?\\'" . web-mode))
+  ;; enable JS features in web-mode when working in Vue files
+  (defun vue-in-web-mode ()
+    (when (and (stringp buffer-file-name)
+               (string-match "\\.vue\\'" buffer-file-name))
+          (flycheck-mode)))
+          
   (setq web-mode-enable-current-element-highlight t)
   (setq web-mode-enable-auto-pairing nil)
   (setq web-mode-enable-auto-closing t)
+  (setq web-mode-code-indent-offset 0)
   (setq-default web-mode-builtin-face nil)
   (setq-default web-mode-keyword-face nil)
   (setq web-mode-ac-sources-alist
@@ -560,6 +572,7 @@ customization to keep the syntax highlighting to a minimum,
     (setq-local electric-pair-pairs (append electric-pair-pairs web-mode-electric-pairs))
     (setq-local electric-pair-text-pairs electric-pair-pairs))
   (add-hook 'web-mode-hook 'web-mode-add-electric-pairs))
+  (add-hook 'web-mode-hook 'vue-in-web-mode)
 #+END_SRC
 
 ** Prettier
@@ -571,27 +584,8 @@ my company so I'm just embracing it with gritted teeth.
 #+BEGIN_SRC emacs-lisp
 (use-package prettier-js
   :init
-  (add-hook 'vue-mode-hook 'prettier-js-mode)
-  (add-hook 'js-mode-hook 'prettier-js-mode))
+  (add-hook 'js2-mode-hook 'prettier-js-mode))
 #+END_SRC
-
-** Vue Mode
-Vue is my personal front end framework of choice, and it's also what
-we use at my current company. While it's not without quirks, vue mode
-is still the /only/ true major mode for working in Vue, and generally
-speaking it does what I want.
-#+BEGIN_SRC emacs-lisp
-(use-package vue-mode
-  :defer t
-  :config
-  (setq mmm-submode-decoration-level 0)
-  (setq vue-html-tab-width 0)
-  (flycheck-add-mode 'javascript-eslint 'vue-mode)
-  :init
-  (add-hook 'vue-mode-hook 'emmet-mode)
-  (add-hook 'vue-mode-hook 'electric-pair-mode))
-#+END_SRC
-
 ** JavaScript Mode
 #+BEGIN_SRC emacs-lisp
 (use-package js2-mode
@@ -673,15 +667,6 @@ want certain warnings when writing Emacs Lisp blocks.
 (add-hook 'org-src-mode-hook 'my/disable-flycheck-in-org-src-block)
 #+END_SRC
 
-I work with JIRA/Confluence at work, and I want to be able to author
-Atlassian markup in org-mode. I need to make sure I have [[https://github.com/emacsmirror/org/blob/master/contrib/lisp/ox-confluence.el][ox-confluence]]
-in my load path so it can be =require=d below.
-#+BEGIN_SRC emacs-lisp
-(require 'ox-confluence)
-(setq org-export-backends (quote (
-  md
-)))
-#+END_SRC
 * Concluding
 
 Hopefully you like what you've seen, and you feel more empowered to
