@@ -348,10 +348,10 @@ with spaces.
 ** Color Themes
 I change themes a lot. I'm ok with myself.
 #+BEGIN_SRC emacs-lisp
-(use-package chocolate-theme
+(use-package dracula-theme
   :ensure t
   :config
-  (load-theme 'chocolate t))
+  (load-theme 'dracula t))
 #+END_SRC
 
 ** The Modeline
@@ -611,6 +611,31 @@ my company so I'm just embracing it with gritted teeth.
   (add-to-list 'auto-mode-alist '("\\.js\\'\\|\\.json\\'" . js2-mode)))
 #+END_SRC
 
+** Python
+So far, the most helpful package I've found for working in Python is
+Elpy. Pipenv also adds support for virtualenvs, which is really useful.
+#+BEGIN_SRC emacs-lisp
+(use-package elpy
+  :ensure t
+  :init
+  (elpy-enable))
+
+(use-package pipenv
+  :hook (python-mode . pipenv-mode)
+  :init
+  (setq
+   pipenv-projectile-after-switch-function
+   #'pipenv-projectile-after-switch-extended))
+#+END_SRC
+** Restclient
+[[https://github.com/pashky/restclient.el][Restclient.el]] is an amazing package for making HTTP requests directly
+from Emacs. With a plain-text ~.http~ file, you can start hitting an
+API or webservice directly and seeing the output in a new buffer. If
+you've ever used Postman to query a RESTful API, then you should try
+out ~restclient.el~.
+#+BEGIN_SRC emacs-lisp
+(use-package 'restclient)
+#+END_SRC
 ** Exec Path from Shell
 This package causes Emacs to read my system's $PATH, so packages that
 rely on things like ~ripgrep~ will "just work".
