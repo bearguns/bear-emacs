@@ -616,7 +616,7 @@ API or webservice directly and seeing the output in a new buffer. If
 you've ever used Postman to query a RESTful API, then you should try
 out ~restclient.el~.
 #+BEGIN_SRC emacs-lisp
-(use-package 'restclient)
+(use-package restclient)
 #+END_SRC
 ** Exec Path from Shell
 This package causes Emacs to read my system's $PATH, so packages that
