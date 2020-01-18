@@ -354,6 +354,23 @@ I change themes a lot. I'm ok with myself.
   (load-theme 'dracula t))
 #+END_SRC
 
+** The Modeline
+The Emacs modeline is a helpful feature that appears along the bottom
+of every window. It gives you information about the current buffer,
+enabled modes, etc. It can be extended with packages like
+doom-modeline to provide better Git status information, icons, and the
+like.
+#+BEGIN_SRC emacs-lisp
+(use-package doom-modeline
+      :ensure t
+      :config
+      (setq doom-modeline-project-detection 'project)
+      (setq doom-modeline-buffer-file-name-style 'relative-from-project)
+      (setq doom-modeline-height 15)
+      (setq doom-modeline-width 3)
+      (setq doom-modeline-icon (display-graphic-p))
+      :hook (after-init . doom-modeline-mode))
+#+END_SRC
 ** Rainbow Delimiters
 [[https://github.com/Fanael/rainbow-delimiters][Rainbow delimiters mode]] is helpful in all kinds of programming
 modes. It colors parentheses, braces, brackets, etc. so that you can
@@ -558,6 +575,7 @@ customization to keep the syntax highlighting to a minimum,
   (setq web-mode-enable-current-element-highlight t)
   (setq web-mode-enable-auto-pairing nil)
   (setq web-mode-enable-auto-closing t)
+  (setq web-mode-code-indent-offset 4)
   (setq-default web-mode-builtin-face nil)
   (setq-default web-mode-keyword-face nil)
   (setq web-mode-ac-sources-alist
