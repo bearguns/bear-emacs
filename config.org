@@ -341,17 +341,19 @@ with spaces.
 ** Fonts
 #+BEGIN_SRC emacs-lisp
 ;; on most systems with a ~1080p display, 140 height is big and readable.
-(when (member "Cascadia Code" (font-family-list))
-	      (set-face-attribute 'default nil :font "Cascadia Code" :height 140))
+(when (member "JetBrains Mono" (font-family-list))
+  (cond ((string-equal system-type "gnu/linux") (set-face-attribute 'default nil :font "JetBrains Mono" :height 150))
+        ((string-equal system-type "darwin") (set-face-attribute 'default nil :font "JetBrains Mono" :height 130))))
+
+
 #+END_SRC
 
 ** Color Themes
 I change themes a lot. I'm ok with myself.
 #+BEGIN_SRC emacs-lisp
-(use-package dracula-theme
+(use-package chocolate-theme
   :ensure t
-  :config
-  (load-theme 'dracula t))
+  :config (load-theme 'chocolate t))
 #+END_SRC
 
 ** The Modeline
