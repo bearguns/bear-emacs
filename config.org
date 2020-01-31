@@ -341,9 +341,8 @@ with spaces.
 ** Fonts
 #+BEGIN_SRC emacs-lisp
 ;; on most systems with a ~1080p display, 140 height is big and readable.
-(when (member "JetBrains Mono" (font-family-list))
-  (cond ((string-equal system-type "gnu/linux") (set-face-attribute 'default nil :font "JetBrains Mono" :height 150))
-        ((string-equal system-type "darwin") (set-face-attribute 'default nil :font "JetBrains Mono" :height 130))))
+(cond ((string-equal system-type "gnu/linux") (set-face-attribute 'default nil :font "Inconsolata" :height 130))
+        ((string-equal system-type "darwin") (set-face-attribute 'default nil :font "Inconsolata" :height 140)))
 
 
 #+END_SRC
@@ -566,6 +565,8 @@ customization to keep the syntax highlighting to a minimum,
   :ensure t
   :config
   (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+  ;; enable web-mode for Svelte files
+  (add-to-list 'auto-mode-alist '("\\.svelte?\\'" . web-mode))
   ;; enable web-mode for VueJS files
   (add-to-list 'auto-mode-alist '("\\.vue?\\'" . web-mode))
   ;; enable JS features in web-mode when working in Vue files
