@@ -322,10 +322,9 @@ you might be more familiar with.
     (tool-bar-mode -1))
 #+END_SRC
 
-I want Emacs to start maximized, with 2 windows split vertically.
+I want Emacs to start maximized
 #+BEGIN_SRC emacs-lisp
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
-(split-window-horizontally)
 #+END_SRC
 
 I like to configure the cursor (the visual display of "point") a
